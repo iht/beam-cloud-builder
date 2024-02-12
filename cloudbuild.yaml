@@ -1,0 +1,20 @@
+steps:
+  # Download current version of image (if any)
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: [ '-c', 'docker pull ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} || exit 0' ]
+  # Docker Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t',
+           '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}',
+           '--cache-from',
+           '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest',
+           'dev-support/docker']
+  # Docker Push
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push',
+           '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}']
+substitutions:
+  _LOCATION: europe-southwest1
+  _REPOSITORY: beam-build-docker
+  _IMAGE: beam-cloud-builder
